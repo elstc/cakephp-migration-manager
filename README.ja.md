@@ -4,14 +4,14 @@
     <a href="LICENSE.txt" target="_blank">
         <img alt="Software License" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square">
     </a>
-    <a href="https://travis-ci.org/nojimage/cakephp-migration-manager" target="_blank">
-        <img alt="Build Status" src="https://img.shields.io/travis/nojimage/cakephp-migration-manager/master.svg?style=flat-square">
+    <a href="https://travis-ci.org/elstc/cakephp-migration-manager" target="_blank">
+        <img alt="Build Status" src="https://img.shields.io/travis/elstc/cakephp-migration-manager/master.svg?style=flat-square">
     </a>
-    <a href="https://codecov.io/gh/nojimage/cakephp-migration-manager" target="_blank">
-        <img alt="Codecov" src="https://img.shields.io/codecov/c/github/nojimage/cakephp-migration-manager.svg?style=flat-square">
+    <a href="https://codecov.io/gh/elstc/cakephp-migration-manager" target="_blank">
+        <img alt="Codecov" src="https://img.shields.io/codecov/c/github/elstc/cakephp-migration-manager.svg?style=flat-square">
     </a>
-    <a href="https://packagist.org/packages/nojimage/cakephp-migration-manager" target="_blank">
-        <img alt="Latest Stable Version" src="https://img.shields.io/packagist/v/nojimage/cakephp-migration-manager.svg?style=flat-square">
+    <a href="https://packagist.org/packages/elstc/cakephp-migration-manager" target="_blank">
+        <img alt="Latest Stable Version" src="https://img.shields.io/packagist/v/elstc/cakephp-migration-manager.svg?style=flat-square">
     </a>
 </p>
 
