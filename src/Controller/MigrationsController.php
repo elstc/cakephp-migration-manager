@@ -5,6 +5,7 @@
 
 namespace Elastic\MigrationManager\Controller;
 
+use Cake\Core\Configure;
 use Cake\Http\Response;
 use Elastic\MigrationManager\Model\Migration\MigrationGroup;
 use Elastic\MigrationManager\Model\Migration\MigrationGroups;
@@ -53,15 +54,16 @@ class MigrationsController extends BaseController
     }
 
     /**
-     * View MigrationGroup
+     * Show MigrationGroup
      *
      * @return void
      */
     public function view()
     {
         $migrationGroup = new MigrationGroup($this->request->getQuery('name'));
+        $canRollback = Configure::read('Elastic/MigrationManager.canRollback', false);
 
-        $this->set(compact('migrationGroup'));
+        $this->set(compact('migrationGroup', 'canRollback'));
     }
 
     /**
@@ -99,6 +101,12 @@ class MigrationsController extends BaseController
     public function rollback()
     {
         $this->request->allowMethod(['post']);
+
+        if (!Configure::read('Elastic/MigrationManager.canRollback', false)) {
+            $this->Flash->error(__d('elastic.migration_manager', 'Can not rollback.'));
+
+            return $this->redirect(['action' => 'index']);
+        }
 
         $groupName = $this->request->getData('groupName');
         $id = $this->request->getData('id');

@@ -8,6 +8,7 @@ use Elastic\MigrationManager\Model\Migration\MigrationGroup;
 
 /* @var $this View */
 /* @var $migrationGroup MigrationGroup */
+/* @var $canRollback bool */
 
 $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
 ?>
@@ -65,7 +66,7 @@ $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
                     )
                     ?>
                 <?php endif; ?>
-                <?php if ($migrationStatus->status === 'up') : ?>
+                <?php if ($canRollback && $migrationStatus->status === 'up') : ?>
                     <?=
                     $this->Form->postLink(
                         __d('elastic.migration_manager', 'Rollback to here'),
@@ -82,7 +83,7 @@ $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
                     )
                     ?>
                 <?php endif; ?>
-                <?php if ($idx === 0 && $migrationStatus->status === 'up') : ?>
+                <?php if ($canRollback && $idx === 0 && $migrationStatus->status === 'up') : ?>
                     <?=
                     $this->Form->postLink(
                         __d('elastic.migration_manager', 'Rollback This'),
