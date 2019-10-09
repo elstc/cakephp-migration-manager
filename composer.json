@@ -1,0 +1,24 @@
+{
+    "name": "elastic/migration-manager",
+    "description": "Migration GUI plugin for CakePHP 3",
+    "type": "cakephp-plugin",
+    "license": "MIT",
+    "require": {
+        "cakephp/cakephp": "^3.5",
+        "cakephp/migrations": "^1.0|^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7|^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Elastic\\MigrationManager\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Elastic\\MigrationManager\\Test\\": "tests",
+            "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    }
+}
