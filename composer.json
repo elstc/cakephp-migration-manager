@@ -1,5 +1,5 @@
 {
-    "name": "elstc/migration-manager",
+    "name": "elstc/cakephp-migration-manager",
     "description": "Migration GUI plugin for CakePHP 3",
     "type": "cakephp-plugin",
     "license": "MIT",
