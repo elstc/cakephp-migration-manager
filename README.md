@@ -19,10 +19,17 @@ This plugin provides a GUI for database migrations via a web browser.
 
 ## IMPORTANT NOTICE
 
-This plugin can be run migration from the web browser directly,
+This plugin can be run migration from the web browser directly
+so some operation may deleting/breaking data,
 You install this only when CUI cannot be used due to server restrictions.
 Also, when installing, setup authentication and authorization appropriately,
 so that unauthorized users cannot execute it.
+
+## Features
+
+- List of Application / Plugins migration statuses
+- Run migrate / rollback a migration
+- Show migration file
 
 ## Installation
 
@@ -65,8 +72,11 @@ Configure::write('Elastic/MigrationManager.baseController', \App\Controller\Admi
 
 You can be used by accessing `https://{your-app-host}/migration-manager/migrations` from a browser.
 
-## Features
+### Allow rollback
 
-- List of Application / Plugins migration statuses
-- Run migrate / rollback a migration
-- Show migration file
+In default, you can't call rollback action.
+If you want to rollback, adding the following statement in your project's `config/bootstrap.php` file:
+
+```php
+Configure::write('Elastic/MigrationManager.canRollback', true);
+```
