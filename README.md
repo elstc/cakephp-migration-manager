@@ -64,3 +64,9 @@ Configure::write('Elastic/MigrationManager.baseController', \App\Controller\Admi
 ## Usage
 
 You can be used by accessing `https://{your-app-host}/migration-manager/migrations` from a browser.
+
+## Features
+
+- List of Application / Plugins migration statuses
+- Run migrate / rollback a migration
+- Show migration file

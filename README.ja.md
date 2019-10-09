@@ -62,3 +62,9 @@ Configure::write('Elastic/MigrationManager.baseController', \App\Controller\Admi
 ## 使用方法
 
 ブラウザから `https://{your-app-host}/migration-manager/migrations` へアクセスすることで使用できます。
+
+## 機能
+
+- アプリケーション/プラグインのマイグレーション適用状況の一覧表示
+- マイグレーションの適用/ロールバック
+- マイグレーションファイルの表示
