@@ -38,6 +38,7 @@ if (version_compare(Configure::version(), '3.6.0', '>=')) {
     error_reporting(E_ALL ^ E_USER_DEPRECATED);
 }
 
-Plugin::load('Elastic/MigrationManager', ['path' => dirname(__DIR__) . DS]);
+Plugin::load('Migrations', ['path' => dirname(__DIR__) . DS . 'vendor/cakephp/migrations/']);
+Plugin::load('Elastic/MigrationManager', ['path' => dirname(__DIR__) . DS, 'bootstrap' => true]);
 
 error_reporting(E_ALL);

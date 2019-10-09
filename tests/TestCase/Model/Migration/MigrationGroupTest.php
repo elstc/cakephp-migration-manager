@@ -48,12 +48,11 @@ class MigrationGroupTest extends TestCase
         $this->assertSame('App', $object->getName());
         $this->assertInstanceOf(Config::class, $object->getConfig());
         $this->assertSame('default', $object->getConfig()->getDefaultEnvironment());
-        $this->assertSame([
-            CONFIG . 'Migrations',
-        ], $object->getConfig()->getMigrationPaths());
-        $this->assertSame([
-            CONFIG . 'Seeds',
-        ], $object->getConfig()->getSeedPaths());
+        // Migrations plugin >= 2.1 以降 CONFIG が使用されるため環境によりマイグレーションパスが異なる
+        $configPathMatch = preg_quote(ROOT, '!') . '(/tests/test_app)?/config';
+
+        $this->assertRegExp('!^' . $configPathMatch . '/Migrations$!', $object->getConfig()->getMigrationPaths()[0]);
+        $this->assertRegExp('!^' . $configPathMatch . '/Seeds$!', $object->getConfig()->getSeedPaths()[0]);
         $environment = $object->getConfig()->getEnvironment('default');
         $this->assertSame('phinxlog', $environment['default_migration_table']);
     }
