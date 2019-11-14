@@ -43,12 +43,13 @@ class MigrationGroup
      * MigrationGroup constructor.
      *
      * @param string $name the app / plugin name
+     * @param string|null $connection the connection name
      */
-    public function __construct($name)
+    public function __construct($name, $connection = null)
     {
         $this->name = $name;
 
-        $this->input = $this->buildInput($name);
+        $this->input = $this->buildInput($name, $connection);
     }
 
     /**
@@ -63,13 +64,17 @@ class MigrationGroup
      * Inputオブジェクトの構築
      *
      * @param string $name the app / plugin name
+     * @param string|null $connection the connection name
      * @return InputInterface
      */
-    private function buildInput($name)
+    private function buildInput($name, $connection = null)
     {
         $args = [];
         if ($name !== Configure::read('App.namespace')) {
             $args['--plugin'] = $name;
+        }
+        if ($connection) {
+            $args['--connection'] = $connection;
         }
 
         return (new InputBuilder())->build($args);
@@ -98,7 +103,7 @@ class MigrationGroup
     {
         if ($this->manager === null) {
             $this->output = new BufferedOutput();
-            $this->manager = new MigrationManager($this->getConfig(), $this->buildInput($this->getName()), $this->output);
+            $this->manager = new MigrationManager($this->getConfig(), $this->input, $this->output);
         }
 
         return $this->manager;
@@ -166,9 +171,20 @@ class MigrationGroup
             throw new NotFoundException(__d('elastic.migration_manager', 'Migration Not Found. ID: {0}', $id));
         }
 
-        $refrection = new ReflectionClass($migration);
+        $reflection = new ReflectionClass($migration);
 
-        return file_get_contents($refrection->getFileName());
+        return file_get_contents($reflection->getFileName());
+    }
+
+    /**
+     * change connection
+     *
+     * @param string $connection target connection name
+     * @return $this
+     */
+    public function withConnection($connection)
+    {
+        return new static($this->name, $connection);
     }
 
     /**

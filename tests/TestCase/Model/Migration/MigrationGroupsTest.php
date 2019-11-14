@@ -17,14 +17,14 @@ use Traversable;
 class MigrationGroupsTest extends TestCase
 {
     /**
-     * @var \Elastic\MigrationManager\Model\Migration\MigrationGroups
+     * @var MigrationGroups
      */
     private $subject;
 
     public function setUp()
     {
         parent::setUp();
-        $this->subject = new \Elastic\MigrationManager\Model\Migration\MigrationGroups();
+        $this->subject = new MigrationGroups();
     }
 
     public function tearDown()
@@ -51,5 +51,19 @@ class MigrationGroupsTest extends TestCase
             return $group->getName();
         });
         $this->assertContains('Elastic/MigrationManager', $names->toList());
+    }
+
+    /**
+     * コネクションを指定できる
+     */
+    public function testWithConnection()
+    {
+        $groups = $this->subject->withConnection('other');
+
+        $results = $groups->fetchAll();
+
+        $first = $results->first();
+        $this->assertSame('default', $first->getConfig()->getDefaultEnvironment());
+        $this->assertSame(5432, $first->getConfig()->getEnvironment('default')['port']);
     }
 }

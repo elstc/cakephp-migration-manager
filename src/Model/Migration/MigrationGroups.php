@@ -16,6 +16,11 @@ use Cake\Core\Plugin;
 class MigrationGroups
 {
     /**
+     * @var string
+     */
+    private $connection;
+
+    /**
      * @return CollectionInterface|MigrationGroup[]
      */
     public function fetchAll()
@@ -46,7 +51,7 @@ class MigrationGroups
             $name = Configure::read('App.namespace');
         }
 
-        return new MigrationGroup($name);
+        return new MigrationGroup($name, $this->connection);
     }
 
     /**
@@ -60,5 +65,19 @@ class MigrationGroups
         $migrationPath = Plugin::configPath($pluginName) . 'Migrations';
 
         return is_dir($migrationPath) && count(glob($migrationPath . '/*.php'));
+    }
+
+    /**
+     * コネクションのセット
+     *
+     * @param string|null $connection 指定コネクション
+     * @return MigrationGroups
+     */
+    public function withConnection($connection)
+    {
+        $new = clone $this;
+        $new->connection = $connection;
+
+        return $new;
     }
 }

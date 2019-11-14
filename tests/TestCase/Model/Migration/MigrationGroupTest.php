@@ -208,4 +208,31 @@ class MigrationGroupTest extends TestCase
 
         $this->migrationManagerGroup->getFileContent('20110102030405');
     }
+
+    /**
+     * 接続を指定して初期化できる
+     */
+    public function testConstructWithConnection()
+    {
+        $migrationGroup = new MigrationGroup('Elastic/MigrationManager', 'other');
+
+        $this->assertSame('default', $migrationGroup->getConfig()->getDefaultEnvironment());
+        $this->assertSame(5432, $migrationGroup->getConfig()->getEnvironment('default')['port']);
+    }
+
+    /**
+     * 接続を指定できる
+     */
+    public function testWithConnection()
+    {
+        $migrationGroup = new MigrationGroup('Elastic/MigrationManager');
+        $withConnection = $migrationGroup->withConnection('other');
+
+        $this->assertSame('default', $withConnection->getConfig()->getDefaultEnvironment());
+        $this->assertSame(5432, $withConnection->getConfig()->getEnvironment('default')['port']);
+
+        // immutable
+        $this->assertSame('default', $migrationGroup->getConfig()->getDefaultEnvironment());
+        $this->assertNull($migrationGroup->getConfig()->getEnvironment('default')['port']);
+    }
 }

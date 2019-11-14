@@ -32,6 +32,7 @@ chdir($root);
 
 require $root . '/vendor/cakephp/cakephp/tests/bootstrap.php';
 ConnectionManager::setConfig('default', ['url' => getenv('db_dsn')]);
+ConnectionManager::setConfig('other', ['url' => getenv('db_dsn'), 'port' => 5432]);
 
 // Disable deprecations for now when using 3.6
 if (version_compare(Configure::version(), '3.6.0', '>=')) {
