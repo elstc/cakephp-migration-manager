@@ -8,8 +8,11 @@ namespace Elastic\MigrationManager\Model\Migration;
 use Cake\Collection\Collection;
 use Cake\Collection\CollectionInterface;
 use Cake\Core\Configure;
+use Cake\Database\Connection;
+use Cake\Datasource\ConnectionManager;
 use Cake\Http\Exception\NotFoundException;
 use Elastic\MigrationManager\Model\Entity\MigrationStatus;
+use Migrations\CakeAdapter;
 use Migrations\ConfigurationTrait;
 use Phinx\Migration\Manager;
 use ReflectionClass;
@@ -84,6 +87,7 @@ class MigrationGroup
      * マイグレーションリストの取得
      *
      * @return CollectionInterface|MigrationStatus[]
+     * @throws \Exception
      */
     public function getMigrations()
     {
@@ -98,21 +102,52 @@ class MigrationGroup
 
     /**
      * @return Manager|MigrationManager
+     * @throws \Exception
      */
     private function getManager()
     {
         if ($this->manager === null) {
             $this->output = new BufferedOutput();
             $this->manager = new MigrationManager($this->getConfig(), $this->input, $this->output);
+            $this->setAdapter();
         }
 
         return $this->manager;
     }
 
     /**
+     * Sets the adapter the manager is going to need to operate on the DB
+     * This will make sure the adapter instance is a \Migrations\CakeAdapter instance
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private function setAdapter()
+    {
+        $env = $this->manager->getEnvironment('default');
+        $adapter = $env->getAdapter();
+
+        if ($adapter instanceof CakeAdapter) {
+            return;
+        }
+
+        $connectionName = 'default';
+        if ($this->input !== null && $this->input->getOption('connection')) {
+            $connectionName = $this->input->getOption('connection');
+        }
+        $connection = ConnectionManager::get($connectionName);
+        if (!$connection instanceof Connection) {
+            throw new \Exception('$connection must be ' . Connection::class);
+        }
+
+        $env->setAdapter(new CakeAdapter($adapter, $connection));
+    }
+
+    /**
      * 最終のマイグレーション
      *
      * @return MigrationStatus
+     * @throws \Exception
      */
     public function getLastMigration()
     {
@@ -124,6 +159,7 @@ class MigrationGroup
      *
      * @param string $id migration ID
      * @return string
+     * @throws \Exception
      */
     public function migrateTo($id)
     {
@@ -138,6 +174,7 @@ class MigrationGroup
      *
      * @param string $id migration ID
      * @return string
+     * @throws \Exception
      */
     public function rollback($id)
     {
@@ -154,6 +191,7 @@ class MigrationGroup
      * @return string
      * @throws NotFoundException
      * @throws ReflectionException
+     * @throws \Exception
      */
     public function getFileContent($id)
     {
@@ -189,6 +227,7 @@ class MigrationGroup
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function __debugInfo()
     {
