@@ -185,6 +185,21 @@ class MigrationGroup
     }
 
     /**
+     * シードを実行する
+     *
+     * @param string $seed seed name
+     * @return string
+     * @throws \Exception
+     */
+    public function seed($seed = null)
+    {
+        $manager = $this->getManager();
+        $manager->seed($this->getConfig()->getDefaultEnvironment(), $seed);
+
+        return $this->output->fetch();
+    }
+
+    /**
      * マイグレーションファイルの内容を取得する
      *
      * @param string $id migration ID
