@@ -7,13 +7,15 @@ use Cake\Controller\Controller;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
 
-class_alias(Configure::read(
-    'Elastic/MigrationManager.baseController',
-    Controller::class
-), '\Elastic\MigrationManager\Controller\BaseController');
+if (!class_exists('Elastic\MigrationManager\Controller\BaseController')) {
+    class_alias(Configure::read(
+        'Elastic/MigrationManager.baseController',
+        Controller::class
+    ), 'Elastic\MigrationManager\Controller\BaseController');
+}
 
 // back port for CakePHP < 3.6
-if (version_compare(Configure::version(), '3.6.0', '<')) {
+if (!class_exists('Cake\Http\Exception\NotFoundException')) {
     class_alias('Cake\Network\Exception\NotFoundException', 'Cake\Http\Exception\NotFoundException');
 }
 
