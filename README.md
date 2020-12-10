@@ -4,8 +4,8 @@
     <a href="LICENSE.txt" target="_blank">
         <img alt="Software License" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square">
     </a>
-    <a href="https://travis-ci.org/elstc/cakephp-migration-manager" target="_blank">
-        <img alt="Build Status" src="https://img.shields.io/travis/elstc/cakephp-migration-manager/master.svg?style=flat-square">
+    <a href="https://github.com/elstc/cakephp-migration-manager/actions" target="_blank">
+        <img alt="Build Status" src="https://img.shields.io/github/workflow/status/elstc/cakephp-migration-manager/ci?style=flat-square">
     </a>
     <a href="https://codecov.io/gh/elstc/cakephp-migration-manager" target="_blank">
         <img alt="Codecov" src="https://img.shields.io/codecov/c/github/elstc/cakephp-migration-manager.svg?style=flat-square">
