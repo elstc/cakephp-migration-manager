@@ -28,7 +28,16 @@ class MigrationGroups
         $collections = [];
         $collections[] = $this->createMigrationGroup();
 
-        $plugins = Plugin::loaded();
+        $plugins = [];
+        if (method_exists(Plugin::class, 'getCollection')) {
+            foreach (Plugin::getCollection() as $plugin) {
+                $plugins[] = $plugin->getName();
+            }
+            sort($plugins);
+        } else {
+            $plugins = Plugin::loaded();
+        }
+
         foreach ($plugins as $pluginName) {
             if ($this->hasMigrations($pluginName)) {
                 $collections[] = $this->createMigrationGroup($pluginName);
