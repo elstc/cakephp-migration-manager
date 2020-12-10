@@ -18,11 +18,11 @@ if (version_compare(Configure::version(), '3.6.0', '<')) {
 }
 
 // Load Migrations plugin
-if (!Plugin::loaded('Migrations')) {
-    $errorReporting = error_reporting();
-    if (version_compare(Configure::version(), '3.6.0', '>=')) {
-        error_reporting(E_ALL ^ E_USER_DEPRECATED);
-    }
-    Plugin::load('Migrations');
-    error_reporting($errorReporting);
+$errorReporting = error_reporting();
+if (version_compare(Configure::version(), '3.6.0', '>=')) {
+    error_reporting(E_ALL ^ E_USER_DEPRECATED);
 }
+if (!Plugin::loaded('Migrations')) {
+    Plugin::load('Migrations');
+}
+error_reporting($errorReporting);
