@@ -3,7 +3,7 @@
     <exclude-pattern>vendor/*</exclude-pattern>
     <exclude-pattern>config/Migrations/*</exclude-pattern>
     <exclude-pattern>config/Seeds/*</exclude-pattern>
-    <exclude-pattern>Template/Bake/*</exclude-pattern>
+    <exclude-pattern>templates/Bake/*</exclude-pattern>
     <exclude-pattern>webroot/*</exclude-pattern>
 
     <rule ref="./vendor/cakephp/cakephp-codesniffer/CakePHP"/>
@@ -12,15 +12,15 @@
         <severity>0</severity>
     </rule>
     <rule ref="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.InvalidCommentType">
-        <exclude-pattern>Template/*</exclude-pattern>
+        <exclude-pattern>templates/*</exclude-pattern>
     </rule>
     <rule ref="Generic.Files.LineLength.TooLong">
-        <exclude-pattern>Template/*</exclude-pattern>
+        <exclude-pattern>templates/*</exclude-pattern>
     </rule>
     <rule ref="Generic.WhiteSpace.ScopeIndent.IncorrectExact">
-        <exclude-pattern>Template/*</exclude-pattern>
+        <exclude-pattern>templates/*</exclude-pattern>
     </rule>
     <rule ref="Squiz.ControlStructures.ControlSignature.NewlineAfterOpenBrace">
-        <exclude-pattern>Template/*</exclude-pattern>
+        <exclude-pattern>templates/*</exclude-pattern>
     </rule>
 </ruleset>
