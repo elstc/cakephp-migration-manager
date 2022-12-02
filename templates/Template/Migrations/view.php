@@ -49,7 +49,7 @@ $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
                 );
                 ?>
             </td>
-            <td class="actions">
+            <td>
                 <?php if ($migrationStatus->status === 'down') : ?>
                     <?=
                     $this->Form->postLink(
@@ -60,7 +60,7 @@ $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
                                 'groupName' => $migrationGroup->getName(),
                                 'id' => $migrationStatus->id,
                             ],
-                            'class' => 'button small btn btn-primary',
+                            'class' => 'button',
                             'style' => 'margin-bottom: 0;',
                             'confirm' => __d('elastic.migration_manager', 'Are you sure you want migration to: {0} {1}', $migrationStatus->id, $migrationStatus->name),
                         ]
