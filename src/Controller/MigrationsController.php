@@ -25,16 +25,17 @@ class MigrationsController extends BaseController
     public function initialize(): void
     {
         parent::initialize();
-        if (!$this->Flash) {
+        if (!$this->components()->has('Flash')) {
             $this->loadComponent('Flash');
         }
-        if ($this->Authorization) {
-            $this->Authorization->setConfig('authorizeModel', [
+        if ($this->components()->has('Authorization')) {
+            $authorization = $this->components()->get('Authorization');
+            $authorization->setConfig('authorizeModel', [
                 'migrate',
                 'rollback',
                 'showFile',
             ]);
-            $this->Authorization->setConfig('actionMap', [
+            $authorization->setConfig('actionMap', [
                 'migrate' => 'edit',
                 'rollback' => 'edit',
                 'showFile' => 'view',
@@ -61,7 +62,7 @@ class MigrationsController extends BaseController
      */
     public function view(): void
     {
-        $migrationGroup = new MigrationGroup($this->request->getQuery('name'));
+        $migrationGroup = new MigrationGroup($this->getRequest()->getQuery('name'));
         $canRollback = Configure::read('Elastic/MigrationManager.canRollback', false);
 
         $this->set(compact('migrationGroup', 'canRollback'));
@@ -74,10 +75,10 @@ class MigrationsController extends BaseController
      */
     public function migrate(): Response
     {
-        $this->request->allowMethod(['post']);
+        $this->getRequest()->allowMethod(['post']);
 
-        $groupName = $this->request->getData('groupName');
-        $id = $this->request->getData('id');
+        $groupName = $this->getRequest()->getData('groupName');
+        $id = $this->getRequest()->getData('id');
         if (empty($groupName) || empty($id)) {
             $this->Flash->error(__d('elastic.migration_manager', 'Missing required arguments.'));
 
@@ -101,7 +102,7 @@ class MigrationsController extends BaseController
      */
     public function rollback(): Response
     {
-        $this->request->allowMethod(['post']);
+        $this->getRequest()->allowMethod(['post']);
 
         if (!Configure::read('Elastic/MigrationManager.canRollback', false)) {
             $this->Flash->error(__d('elastic.migration_manager', 'Can not rollback.'));
@@ -109,8 +110,8 @@ class MigrationsController extends BaseController
             return $this->redirect(['action' => 'index']);
         }
 
-        $groupName = $this->request->getData('groupName');
-        $id = $this->request->getData('id');
+        $groupName = $this->getRequest()->getData('groupName');
+        $id = $this->getRequest()->getData('id');
         if (empty($groupName) || $id === '' || $id === null) {
             $this->Flash->error(__d('elastic.migration_manager', 'Missing required arguments.'));
 
@@ -134,8 +135,8 @@ class MigrationsController extends BaseController
      */
     public function showFile(): void
     {
-        $migrationGroup = new MigrationGroup($this->request->getQuery('groupName'));
-        $migration = $migrationGroup->getMigrations()->firstMatch(['id' => $this->request->getQuery('id')]);
+        $migrationGroup = new MigrationGroup($this->getRequest()->getQuery('groupName'));
+        $migration = $migrationGroup->getMigrations()->firstMatch(['id' => $this->getRequest()->getQuery('id')]);
         $fileContent = $migrationGroup->getFileContent($migration->id);
 
         $this->set(compact('migrationGroup', 'migration', 'fileContent'));
