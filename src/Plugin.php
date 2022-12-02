@@ -74,9 +74,6 @@ class Plugin extends BasePlugin
             'Elastic/MigrationManager',
             ['path' => '/migration-manager'],
             static function (RouteBuilder $routes) {
-                $routes->registerMiddleware('csrf', new CsrfProtectionMiddleware());
-                $routes->applyMiddleware('csrf');
-
                 $routes->fallbacks(DashedRoute::class);
             }
         );
