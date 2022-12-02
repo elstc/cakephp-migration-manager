@@ -1,7 +1,8 @@
 <?php
-/**
- * Copyright 2019 ELASTIC Consultants Inc.
+/*
+ * Copyright 2022 ELASTIC Consultants Inc.
  */
+declare(strict_types=1);
 
 namespace Elastic\MigrationManager\Model\Migration;
 
@@ -20,10 +21,10 @@ class MigrationManager extends CakeManager
      *
      * @param string $environment Environment name.
      * @param null|string $format Format (`json` or `array`).
-     * @return array|string Array of migrations or json string.
+     * @return array[] Array of migrations or json string.
      * @see \Migrations\CakeManager::printStatus()
      */
-    public function printStatus($environment, $format = null)
+    public function printStatus($environment, $format = null): array
     {
         $migrations = [];
         $phpFiles = $this->getMigrationFiles();

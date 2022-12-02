@@ -1,7 +1,8 @@
 <?php
-/**
- * Copyright 2019 ELASTIC Consultants Inc.
+/*
+ * Copyright 2022 ELASTIC Consultants Inc.
  */
+declare(strict_types=1);
 
 namespace Elastic\MigrationManager\Test\TestCase\Model\Migration;
 
@@ -24,24 +25,31 @@ class MigrationGroupTest extends TestCase
      */
     private $migrationManagerGroup;
 
-    public function setUp()
+    /**
+     * @var string
+     */
+    private $_cwd;
+
+    public function setUp(): void
     {
         parent::setUp();
+
         $this->migrationManagerGroup = new MigrationGroup('Elastic/MigrationManager');
         $this->migrationManagerGroup->rollback(0);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->migrationManagerGroup->rollback(0);
         unset($this->migrationManagerGroup);
+
         parent::tearDown();
     }
 
     /**
      * メインアプリケーションのマイグレーションを取得できる
      */
-    public function testConstructApp()
+    public function testConstructApp(): void
     {
         $object = new MigrationGroup(Configure::read('App.namespace'));
 
@@ -60,7 +68,7 @@ class MigrationGroupTest extends TestCase
     /**
      * プラグインのマイグレーションを取得できる
      */
-    public function testConstructPlugin()
+    public function testConstructPlugin(): void
     {
         $object = new MigrationGroup('Elastic/MigrationManager');
 
@@ -80,7 +88,7 @@ class MigrationGroupTest extends TestCase
     /**
      * マイグレーションのリストを取得できる
      */
-    public function testGetMigrations()
+    public function testGetMigrations(): void
     {
         $migrations = $this->migrationManagerGroup->getMigrations();
 
@@ -95,7 +103,7 @@ class MigrationGroupTest extends TestCase
     /**
      * 最後のマイグレーションが取得できる
      */
-    public function testGetLastMigration()
+    public function testGetLastMigration(): void
     {
         $last = $this->migrationManagerGroup->getLastMigration();
 
@@ -108,7 +116,7 @@ class MigrationGroupTest extends TestCase
     /**
      * 指定のバージョンへマイグレーションを実行できる
      */
-    public function testMigrateTo()
+    public function testMigrateTo(): void
     {
         $migrations = $this->migrationManagerGroup->getMigrations();
 
@@ -117,7 +125,7 @@ class MigrationGroupTest extends TestCase
 
         $result = $this->migrationManagerGroup->migrateTo($first->id);
 
-        $this->assertContains('20191008091658 InitForTest: migrated', $result);
+        $this->assertStringContainsString('20191008091658 InitForTest: migrated', $result);
 
         $statuses = $this->migrationManagerGroup->getMigrations()->combine('name', 'status');
         $this->assertSame([
@@ -130,7 +138,7 @@ class MigrationGroupTest extends TestCase
     /**
      * 指定のバージョンをロールバックできる
      */
-    public function testRollback()
+    public function testRollback(): void
     {
         $migrations = $this->migrationManagerGroup->getMigrations();
 
@@ -146,8 +154,8 @@ class MigrationGroupTest extends TestCase
 
         $result = $this->migrationManagerGroup->rollback($first->id);
 
-        $this->assertContains('20191008091959 ThirdMigrationForTest: reverted', $result);
-        $this->assertContains('20191008091715 SecondMigrationForTest: reverted', $result);
+        $this->assertStringContainsString('20191008091959 ThirdMigrationForTest: reverted', $result);
+        $this->assertStringContainsString('20191008091715 SecondMigrationForTest: reverted', $result);
 
         $statuses = $this->migrationManagerGroup->getMigrations()->combine('name', 'status');
         $this->assertSame([
@@ -160,7 +168,7 @@ class MigrationGroupTest extends TestCase
     /**
      * マイグレーションを全てロールバックできる
      */
-    public function testRollbackAll()
+    public function testRollbackAll(): void
     {
         $migrations = $this->migrationManagerGroup->getMigrations();
 
@@ -175,9 +183,9 @@ class MigrationGroupTest extends TestCase
 
         $result = $this->migrationManagerGroup->rollback(0);
 
-        $this->assertContains('20191008091658 InitForTest: reverted', $result);
-        $this->assertContains('20191008091959 ThirdMigrationForTest: reverted', $result);
-        $this->assertContains('20191008091715 SecondMigrationForTest: reverted', $result);
+        $this->assertStringContainsString('20191008091658 InitForTest: reverted', $result);
+        $this->assertStringContainsString('20191008091959 ThirdMigrationForTest: reverted', $result);
+        $this->assertStringContainsString('20191008091715 SecondMigrationForTest: reverted', $result);
 
         $statuses = $this->migrationManagerGroup->getMigrations()->combine('name', 'status');
         $this->assertSame([
@@ -190,7 +198,7 @@ class MigrationGroupTest extends TestCase
     /**
      * 指定IDのマイグレーションファイルの内容を取得できる
      */
-    public function testGetFileContent()
+    public function testGetFileContent(): void
     {
         $expects = file_get_contents(Plugin::configPath('Elastic/MigrationManager') . 'Migrations/20191008091658_InitForTest.php');
         $result = $this->migrationManagerGroup->getFileContent('20191008091658');
@@ -201,7 +209,7 @@ class MigrationGroupTest extends TestCase
     /**
      * 指定IDのマイグレーションファイルが存在しない場合はNotFoundExceptionを返す
      */
-    public function testGetFileContentNotExists()
+    public function testGetFileContentNotExists(): void
     {
         $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage('Migration Not Found. ID: 20110102030405');
@@ -212,7 +220,7 @@ class MigrationGroupTest extends TestCase
     /**
      * 接続を指定して初期化できる
      */
-    public function testConstructWithConnection()
+    public function testConstructWithConnection(): void
     {
         $migrationGroup = new MigrationGroup('Elastic/MigrationManager', 'other');
 
@@ -223,7 +231,7 @@ class MigrationGroupTest extends TestCase
     /**
      * 接続を指定できる
      */
-    public function testWithConnection()
+    public function testWithConnection(): void
     {
         $migrationGroup = new MigrationGroup('Elastic/MigrationManager');
         $withConnection = $migrationGroup->withConnection('other');

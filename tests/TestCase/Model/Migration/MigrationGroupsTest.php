@@ -1,11 +1,13 @@
 <?php
-/**
- * Copyright 2019 ELASTIC Consultants Inc.
+/*
+ * Copyright 2022 ELASTIC Consultants Inc.
  */
+declare(strict_types=1);
 
 namespace Elastic\MigrationManager\Test\TestCase\Model\Migration;
 
 use Cake\Collection\CollectionInterface;
+use Cake\Core\Plugin;
 use Cake\TestSuite\TestCase;
 use Elastic\MigrationManager\Model\Migration\MigrationGroup;
 use Elastic\MigrationManager\Model\Migration\MigrationGroups;
@@ -21,22 +23,24 @@ class MigrationGroupsTest extends TestCase
      */
     private $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
+
         $this->subject = new MigrationGroups();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         unset($this->subject);
+
         parent::tearDown();
     }
 
     /**
      * マイグレーションの存在するアプリケーションとプラグインのリストを取得できる
      */
-    public function testFetchAll()
+    public function testFetchAll(): void
     {
         $results = $this->subject->fetchAll();
 
@@ -56,7 +60,7 @@ class MigrationGroupsTest extends TestCase
     /**
      * コネクションを指定できる
      */
-    public function testWithConnection()
+    public function testWithConnection(): void
     {
         $groups = $this->subject->withConnection('other');
 

@@ -1,14 +1,14 @@
 <?php
-/**
- * Copyright 2019 ELASTIC Consultants Inc.
+/*
+ * Copyright 2022 ELASTIC Consultants Inc.
  */
+declare(strict_types=1);
 
-use Cake\Core\Configure;
-use Cake\Core\Plugin;
+use Cake\Cache\Cache;
 use Cake\Datasource\ConnectionManager;
 
 /**
- * Test suite bootstrap for Elastic/MigrationManager.
+ * Test suite bootstrap for CakePHP Plugin.
  *
  * This function is used to find the location of CakePHP whether CakePHP
  * has been installed as a dependency of the plugin, or the plugin is itself
@@ -23,23 +23,27 @@ $findRoot = function ($root) {
         }
     } while ($root !== $lastRoot);
 
-    throw new Exception("Cannot find the root of the application, unable to run tests");
+    throw new Exception('Cannot find the root of the application, unable to run tests');
 };
 $root = $findRoot(__FILE__);
 unset($findRoot);
 
+$here = __DIR__;
+
 chdir($root);
-
 require $root . '/vendor/cakephp/cakephp/tests/bootstrap.php';
-ConnectionManager::setConfig('default', ['url' => getenv('db_dsn')]);
-ConnectionManager::setConfig('other', ['url' => getenv('db_dsn'), 'port' => 5432]);
 
-// Disable deprecations for now when using 3.6
-if (version_compare(Configure::version(), '3.6.0', '>=')) {
-    error_reporting(E_ALL ^ E_USER_DEPRECATED);
-}
-
-Plugin::load('Migrations', ['path' => dirname(__DIR__) . DS . 'vendor/cakephp/migrations/']);
-Plugin::load('Elastic/MigrationManager', ['path' => dirname(__DIR__) . DS, 'bootstrap' => true]);
+Cache::clearAll();
 
 error_reporting(E_ALL);
+
+//Configure::write('App.namespace', 'TestApp');
+if (!ConnectionManager::getConfig('default')) {
+    ConnectionManager::setConfig('default', ConnectionManager::getConfig('test'));
+}
+if (!ConnectionManager::getConfig('other')) {
+    ConnectionManager::setConfig('other', array_merge(
+        ['port' => 5432],
+        ConnectionManager::getConfig('test')
+    ));
+}

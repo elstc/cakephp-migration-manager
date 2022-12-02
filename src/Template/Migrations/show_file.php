@@ -1,16 +1,17 @@
 <?php
-/**
- * Copyright 2019 ELASTIC Consultants Inc.
+/*
+ * Copyright 2022 ELASTIC Consultants Inc.
  */
+declare(strict_types=1);
 
 use Cake\View\View;
 use Elastic\MigrationManager\Model\Entity\MigrationStatus;
 use Elastic\MigrationManager\Model\Migration\MigrationGroup;
 
-/* @var $this View */
-/* @var $migrationGroup MigrationGroup */
-/* @var $migration MigrationStatus */
-/* @var $fileContent string */
+/* @var View $this */
+/* @var MigrationGroup $migrationGroup */
+/* @var MigrationStatus $migration */
+/* @var string $fileContent */
 
 $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
 ?>

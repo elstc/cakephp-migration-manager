@@ -1,7 +1,8 @@
 <?php
-/**
- * Copyright 2019 ELASTIC Consultants Inc.
+/*
+ * Copyright 2022 ELASTIC Consultants Inc.
  */
+declare(strict_types=1);
 
 namespace Elastic\MigrationManager\Model\Migration;
 
@@ -17,17 +18,17 @@ class InputBuilder
 {
     /**
      * @param array $args options
-     * @return InputInterface
+     * @return \Symfony\Component\Console\Input\InputInterface
      */
-    public function build($args = [])
+    public function build(array $args = []): InputInterface
     {
         return new ArrayInput($args, $this->getDefinition());
     }
 
     /**
-     * @return InputDefinition
+     * @return \Symfony\Component\Console\Input\InputDefinition
      */
-    private function getDefinition()
+    private function getDefinition(): InputDefinition
     {
         static $definition;
         if ($definition !== null) {

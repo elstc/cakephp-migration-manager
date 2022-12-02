@@ -1,11 +1,12 @@
 <?php
-/**
- * Copyright 2019 ELASTIC Consultants Inc.
+/*
+ * Copyright 2022 ELASTIC Consultants Inc.
  */
+declare(strict_types=1);
 
 use Elastic\MigrationManager\Model\Migration\MigrationGroup;
 
-/* @var $migrationGroups MigrationGroup[] */
+/* @var MigrationGroup[] $migrationGroups */
 
 $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
 ?>
@@ -20,7 +21,8 @@ $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($migrationGroups as $migrationGroup) : $lastMigration = $migrationGroup->getLastMigration(); ?>
+    <?php foreach ($migrationGroups as $migrationGroup) :
+        $lastMigration = $migrationGroup->getLastMigration(); ?>
         <tr>
             <td><?= h($migrationGroup->getName()) ?></td>
             <?php if ($lastMigration) : ?>
@@ -35,7 +37,7 @@ $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
                     )
                     ?>
                 </td>
-            <?php else: ?>
+            <?php else : ?>
                 <td></td>
                 <td></td>
                 <td></td>

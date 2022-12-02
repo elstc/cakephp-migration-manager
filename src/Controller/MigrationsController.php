@@ -1,7 +1,8 @@
 <?php
-/**
- * Copyright 2019 ELASTIC Consultants Inc.
+/*
+ * Copyright 2022 ELASTIC Consultants Inc.
  */
+declare(strict_types=1);
 
 namespace Elastic\MigrationManager\Controller;
 
@@ -21,7 +22,7 @@ class MigrationsController extends BaseController
     /**
      * @return void
      */
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         if (!$this->Flash) {
@@ -46,7 +47,7 @@ class MigrationsController extends BaseController
      *
      * @return void
      */
-    public function index()
+    public function index(): void
     {
         $migrationGroups = (new MigrationGroups())->fetchAll();
 
@@ -58,7 +59,7 @@ class MigrationsController extends BaseController
      *
      * @return void
      */
-    public function view()
+    public function view(): void
     {
         $migrationGroup = new MigrationGroup($this->request->getQuery('name'));
         $canRollback = Configure::read('Elastic/MigrationManager.canRollback', false);
@@ -69,9 +70,9 @@ class MigrationsController extends BaseController
     /**
      * Migrate to Target ID
      *
-     * @return Response
+     * @return \Cake\Http\Response
      */
-    public function migrate()
+    public function migrate(): Response
     {
         $this->request->allowMethod(['post']);
 
@@ -96,9 +97,9 @@ class MigrationsController extends BaseController
     /**
      * Rollback to Target ID
      *
-     * @return Response
+     * @return \Cake\Http\Response
      */
-    public function rollback()
+    public function rollback(): Response
     {
         $this->request->allowMethod(['post']);
 
@@ -131,7 +132,7 @@ class MigrationsController extends BaseController
      *
      * @return void
      */
-    public function showFile()
+    public function showFile(): void
     {
         $migrationGroup = new MigrationGroup($this->request->getQuery('groupName'));
         $migration = $migrationGroup->getMigrations()->firstMatch(['id' => $this->request->getQuery('id')]);

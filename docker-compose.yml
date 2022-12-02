@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  mysql:
+    image: ubuntu/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=cakephp_test
+      - MYSQL_USER=cakephp
+      - MYSQL_PASSWORD=cakephp
+    ports:
+      - 3306:3306

@@ -1,4 +1,4 @@
-# MigrationManager plugin for CakePHP 3
+# MigrationManager plugin for CakePHP
 
 <p align="center">
     <a href="LICENSE.txt" target="_blank">

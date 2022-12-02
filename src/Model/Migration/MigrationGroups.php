@@ -1,7 +1,8 @@
 <?php
-/**
- * Copyright 2019 ELASTIC Consultants Inc.
+/*
+ * Copyright 2022 ELASTIC Consultants Inc.
  */
+declare(strict_types=1);
 
 namespace Elastic\MigrationManager\Model\Migration;
 
@@ -21,9 +22,9 @@ class MigrationGroups
     private $connection;
 
     /**
-     * @return CollectionInterface|MigrationGroup[]
+     * @return \Cake\Collection\CollectionInterface|\Elastic\MigrationManager\Model\Migration\MigrationGroup[]
      */
-    public function fetchAll()
+    public function fetchAll(): CollectionInterface
     {
         $collections = [];
         $collections[] = $this->createMigrationGroup();
@@ -52,12 +53,12 @@ class MigrationGroups
      * MigrationGroupの生成
      *
      * @param string|null $name プラグイン名
-     * @return MigrationGroup
+     * @return \Elastic\MigrationManager\Model\Migration\MigrationGroup
      */
-    private function createMigrationGroup($name = null)
+    private function createMigrationGroup(?string $name = null): MigrationGroup
     {
         if ($name === null) {
-            $name = Configure::read('App.namespace');
+            $name = (string)Configure::read('App.namespace', 'App');
         }
 
         return new MigrationGroup($name, $this->connection);
@@ -69,7 +70,7 @@ class MigrationGroups
      * @param string $pluginName プラグイン名
      * @return bool
      */
-    private function hasMigrations($pluginName)
+    private function hasMigrations(string $pluginName): bool
     {
         $migrationPath = Plugin::configPath($pluginName) . 'Migrations';
 
@@ -80,9 +81,9 @@ class MigrationGroups
      * コネクションのセット
      *
      * @param string|null $connection 指定コネクション
-     * @return MigrationGroups
+     * @return self
      */
-    public function withConnection($connection)
+    public function withConnection(?string $connection): MigrationGroups
     {
         $new = clone $this;
         $new->connection = $connection;
