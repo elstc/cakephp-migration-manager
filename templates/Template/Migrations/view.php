@@ -24,7 +24,7 @@ $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
 <table class="table">
     <thead>
     <tr>
-        <th style="width: 15%"><?= __d('elastic.migration_manager', 'Last Migration ID') ?></th>
+        <th style="width: 15%"><?= __d('elastic.migration_manager', 'Migration ID') ?></th>
         <th style="width: 5%"><?= __d('elastic.migration_manager', 'Status') ?></th>
         <th><?= __d('elastic.migration_manager', 'Name') ?></th>
         <th style="width: 30%;"><?= __d('elastic.migration_manager', 'Actions') ?></th>
@@ -67,6 +67,22 @@ $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
                     )
                     ?>
                 <?php endif; ?>
+                <?php if ($canRollback && $idx === 0 && $migrationStatus->status === 'up') : ?>
+                    <?=
+                    $this->Form->postLink(
+                        __d('elastic.migration_manager', 'Rollback All'),
+                        ['action' => 'rollback'],
+                        [
+                            'data' => [
+                                'groupName' => $migrationGroup->getName(),
+                                'id' => 0,
+                            ],
+                            'class' => 'button button-outline',
+                            'confirm' => __d('elastic.migration_manager', 'Are you sure you want rollback all'),
+                        ]
+                    )
+                    ?>
+                <?php endif; ?>
                 <?php if ($canRollback && $migrationStatus->status === 'up') : ?>
                     <?=
                     $this->Form->postLink(
@@ -77,26 +93,9 @@ $this->Html->meta('robots', 'noindex,nofollow', ['block' => true]);
                                 'groupName' => $migrationGroup->getName(),
                                 'id' => $migrationStatus->id,
                             ],
-                            'class' => 'button small btn btn-danger',
+                            'class' => 'button button-outline',
                             'style' => 'margin-bottom: 0;',
                             'confirm' => __d('elastic.migration_manager', 'Are you sure you want rollback to: {0} {1}', $migrationStatus->id, $migrationStatus->name),
-                        ]
-                    )
-                    ?>
-                <?php endif; ?>
-                <?php if ($canRollback && $idx === 0 && $migrationStatus->status === 'up') : ?>
-                    <?=
-                    $this->Form->postLink(
-                        __d('elastic.migration_manager', 'Rollback This'),
-                        ['action' => 'rollback'],
-                        [
-                            'data' => [
-                                'groupName' => $migrationGroup->getName(),
-                                'id' => 0,
-                            ],
-                            'class' => 'button small btn btn-danger',
-                            'style' => 'margin-bottom: 0;',
-                            'confirm' => __d('elastic.migration_manager', 'Are you sure you want rollback all'),
                         ]
                     )
                     ?>
