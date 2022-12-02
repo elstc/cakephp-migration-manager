@@ -41,21 +41,14 @@ The recommended way to install composer packages is:
 composer require elstc/cakephp-migration-manager
 ```
 
-(CakePHP >= 3.6.0) Load the plugin by adding the following statement in your project's `src/Application.php`:
+Load the plugin by adding the following statement in your project's `src/Application.php`:
 
 ```
 \Cake\Lib\Configure::write('Elastic/MigrationManager.baseController', \App\Controller\AppController::class);
-$this->addPlugin('Elastic/MigrationManager', ['bootstrap' => true, 'routes' => true]);
+$this->addPlugin('Elastic/MigrationManager');
 ```
 
-(CakePHP <= 3.5.x) Load the plugin by adding the following statement in your project's `config/bootstrap.php` file:
-
-```
-Configure::write('Elastic/MigrationManager.baseController', \App\Controller\AppController::class);
-Plugin::load('Elastic/MigrationManager', ['bootstrap' => true, 'routes' => true]);
-```
-
-NOTE: If you don't need to migrate, you should comment out `Plugin::load('Elastic/MigrationManager')` to disable the plugin.
+NOTE: If you don't need to migrate, you should comment out `$this->addPlugin('Elastic/MigrationManager')` to disable the plugin.
 
 ## Configure key: Elastic/MigrationManager.baseController
 

@@ -39,21 +39,14 @@
 composer require elstc/cakephp-migration-manager
 ```
 
-(CakePHP >= 3.6.0) アプリケーションの `src/Application.php` ファイルへ、次の行を追加します:
+アプリケーションの `src/Application.php` ファイルへ、次の行を追加します:
 
 ```
 \Cake\Lib\Configure::write('Elastic/MigrationManager.baseController', \App\Controller\AppController::class);
-$this->addPlugin('Elastic/MigrationManager', ['bootstrap' => true, 'routes' => true]);
+$this->addPlugin('Elastic/MigrationManager');
 ```
 
-(CakePHP <= 3.5.x) アプリケーションの `config/bootstrap.php` ファイルへ、次の行を追加します:
-
-```
-Configure::write('Elastic/MigrationManager.baseController', \App\Controller\AppController::class);
-Plugin::load('Elastic/MigrationManager', ['bootstrap' => true, 'routes' => true]);
-```
-
-NOTE: マイグレーションの必要がないときは、`Plugin::load('Elastic/MigrationManager')` をコメントアウトしてプラグインを無効化しておくべきです。
+NOTE: マイグレーションの必要がないときは、`$this->addPlugin('Elastic/MigrationManager')` をコメントアウトしてプラグインを無効化しておくべきです。
 
 ## Configure key: Elastic/MigrationManager.baseController
 
