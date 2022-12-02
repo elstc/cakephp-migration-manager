@@ -148,10 +148,10 @@ class MigrationGroup
     /**
      * 最終のマイグレーション
      *
-     * @return \Elastic\MigrationManager\Model\Entity\MigrationStatus
+     * @return \Elastic\MigrationManager\Model\Entity\MigrationStatus|null
      * @throws \Exception
      */
-    public function getLastMigration(): MigrationStatus
+    public function getLastMigration(): ?MigrationStatus
     {
         return $this->getMigrations()->last();
     }
