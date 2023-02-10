@@ -159,14 +159,14 @@ class MigrationGroup
     /**
      * 指定バージョンまでマイグレーションを実行する
      *
-     * @param string $id migration ID
+     * @param string|int $id migration ID
      * @return string
      * @throws \Exception
      */
-    public function migrateTo(string $id): string
+    public function migrateTo($id): string
     {
         $manager = $this->getManager();
-        $manager->migrate($this->getConfig()->getDefaultEnvironment(), $id);
+        $manager->migrate($this->getConfig()->getDefaultEnvironment(), (int)$id);
 
         return $this->output->fetch();
     }

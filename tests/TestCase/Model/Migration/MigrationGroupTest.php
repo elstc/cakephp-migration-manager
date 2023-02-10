@@ -62,7 +62,7 @@ class MigrationGroupTest extends TestCase
         $this->assertRegExp('!^' . $configPathMatch . '/Migrations$!', $object->getConfig()->getMigrationPaths()[0]);
         $this->assertRegExp('!^' . $configPathMatch . '/Seeds$!', $object->getConfig()->getSeedPaths()[0]);
         $environment = $object->getConfig()->getEnvironment('default');
-        $this->assertSame('phinxlog', $environment['default_migration_table']);
+        $this->assertSame('phinxlog', $environment['migration_table'] ?? $environment['default_migration_table']);
     }
 
     /**
@@ -82,7 +82,7 @@ class MigrationGroupTest extends TestCase
             Plugin::configPath('Elastic/MigrationManager') . 'Seeds',
         ], $object->getConfig()->getSeedPaths());
         $environment = $object->getConfig()->getEnvironment('default');
-        $this->assertSame('elastic_migration_manager_phinxlog', $environment['default_migration_table']);
+        $this->assertSame('elastic_migration_manager_phinxlog', $environment['migration_table'] ?? $environment['default_migration_table']);
     }
 
     /**
@@ -96,7 +96,7 @@ class MigrationGroupTest extends TestCase
         $first = $migrations->first();
         $this->assertInstanceOf(MigrationStatus::class, $first);
         $this->assertSame('down', $first->status);
-        $this->assertSame('20191008091658', $first->id);
+        $this->assertSame('20191008091658', (string)$first->id);
         $this->assertSame('InitForTest', $first->name);
     }
 
@@ -109,7 +109,7 @@ class MigrationGroupTest extends TestCase
 
         $this->assertInstanceOf(MigrationStatus::class, $last);
         $this->assertSame('down', $last->status);
-        $this->assertSame('20191008091959', $last->id);
+        $this->assertSame('20191008091959', (string)$last->id);
         $this->assertSame('ThirdMigrationForTest', $last->name);
     }
 
