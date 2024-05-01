@@ -29,6 +29,14 @@
 - マイグレーションの適用/ロールバック
 - マイグレーションファイルの表示
 
+## バージョン対応表
+
+| CakePHP Version | Plugin Version | Branch         |
+|-----------------|----------------|----------------|
+| 5.x             | 3.x            | cake5          |
+| 4.x             | 2.x            | cake4          |
+| 3.x             | 1.x            | cake3          |
+
 ## インストール
 
 [composer](http://getcomposer.org) を使用してインストールできます。
@@ -39,10 +47,10 @@
 composer require elstc/cakephp-migration-manager
 ```
 
-アプリケーションの `src/Application.php` ファイルへ、次の行を追加します:
+アプリケーションの `Application::bootstrap()` (`src/Application.php` ファイルを開きます) へ、次の行を追加します:
 
 ```
-\Cake\Lib\Configure::write('Elastic/MigrationManager.baseController', \App\Controller\AppController::class);
+\Cake\Core\Configure::write('Elastic/MigrationManager.baseController', \App\Controller\AppController::class);
 $this->addPlugin('Elastic/MigrationManager');
 ```
 

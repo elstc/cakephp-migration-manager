@@ -31,6 +31,14 @@ so that unauthorized users cannot execute it.
 - Run migrate / rollback a migration
 - Show migration file
 
+## Version Map
+
+| CakePHP Version | Plugin Version | Branch         |
+|-----------------|----------------|----------------|
+| 5.x             | 3.x            | cake5          |
+| 4.x             | 2.x            | cake4          |
+| 3.x             | 1.x            | cake3          |
+
 ## Installation
 
 You can install this plugin into your CakePHP application using [composer](http://getcomposer.org).
@@ -41,10 +49,10 @@ The recommended way to install composer packages is:
 composer require elstc/cakephp-migration-manager
 ```
 
-Load the plugin by adding the following statement in your project's `src/Application.php`:
+Load the plugin by adding the following statement in your project's `Application::bootstrap()` (open `src/Application.php`):
 
 ```
-\Cake\Lib\Configure::write('Elastic/MigrationManager.baseController', \App\Controller\AppController::class);
+\Cake\Core\Configure::write('Elastic/MigrationManager.baseController', \App\Controller\AppController::class);
 $this->addPlugin('Elastic/MigrationManager');
 ```
 
