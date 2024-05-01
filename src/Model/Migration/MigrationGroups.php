@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2022 ELASTIC Consultants Inc.
+ * Copyright 2024 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -19,10 +19,10 @@ class MigrationGroups
     /**
      * @var string
      */
-    private $connection;
+    private string $connection = 'default';
 
     /**
-     * @return \Cake\Collection\CollectionInterface|\Elastic\MigrationManager\Model\Migration\MigrationGroup[]
+     * @return \Cake\Collection\CollectionInterface|iterable<\Elastic\MigrationManager\Model\Migration\MigrationGroup>
      */
     public function fetchAll(): CollectionInterface
     {

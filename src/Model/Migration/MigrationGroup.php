@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2022 ELASTIC Consultants Inc.
+ * Copyright 2024 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -13,12 +13,14 @@ use Cake\Database\Connection;
 use Cake\Datasource\ConnectionManager;
 use Cake\Http\Exception\NotFoundException;
 use Elastic\MigrationManager\Model\Entity\MigrationStatus;
+use InvalidArgumentException;
 use Migrations\CakeAdapter;
 use Migrations\ConfigurationTrait;
 use Phinx\Migration\Manager;
 use ReflectionClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * マイグレーショングループ
@@ -30,17 +32,17 @@ class MigrationGroup
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
-     * @var \Phinx\Migration\Manager
+     * @var \Phinx\Migration\Manager|null
      */
-    private $manager;
+    private ?Manager $manager = null;
 
     /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
+     * @var \Symfony\Component\Console\Output\OutputInterface|null
      */
-    private $output;
+    private ?OutputInterface $output = null;
 
     /**
      * MigrationGroup constructor.
@@ -86,7 +88,7 @@ class MigrationGroup
     /**
      * マイグレーションリストの取得
      *
-     * @return \Cake\Collection\CollectionInterface|\Elastic\MigrationManager\Model\Entity\MigrationStatus[]
+     * @return \Cake\Collection\CollectionInterface|iterable<\Elastic\MigrationManager\Model\Entity\MigrationStatus>
      * @throws \Exception
      */
     public function getMigrations(): CollectionInterface
@@ -121,7 +123,7 @@ class MigrationGroup
      *
      * @param \Phinx\Migration\Manager $manager the migration manager
      * @return void
-     * @throws \Exception
+     * @throws \Cake\Datasource\Exception\MissingDatasourceConfigException
      */
     private function setAdapter(Manager $manager): void
     {
@@ -139,7 +141,7 @@ class MigrationGroup
         }
         $connection = ConnectionManager::get($connectionName);
         if (!$connection instanceof Connection) {
-            throw new \Exception('$connection must be ' . Connection::class);
+            throw new InvalidArgumentException('$connection must be ' . Connection::class);
         }
 
         $env->setAdapter(new CakeAdapter($adapter, $connection));
@@ -163,7 +165,7 @@ class MigrationGroup
      * @return string
      * @throws \Exception
      */
-    public function migrateTo($id): string
+    public function migrateTo(string|int $id): string
     {
         $manager = $this->getManager();
         $manager->migrate($this->getConfig()->getDefaultEnvironment(), (int)$id);
@@ -178,7 +180,7 @@ class MigrationGroup
      * @return string
      * @throws \Exception
      */
-    public function rollback($id): string
+    public function rollback(string|int $id): string
     {
         $manager = $this->getManager();
         $manager->rollback($this->getConfig()->getDefaultEnvironment(), $id);
@@ -207,7 +209,6 @@ class MigrationGroup
      * @param string $id migration ID
      * @return string
      * @throws \Cake\Http\Exception\NotFoundException
-     * @throws \ReflectionException
      * @throws \Exception
      */
     public function getFileContent(string $id): string
@@ -246,7 +247,7 @@ class MigrationGroup
      * @return array
      * @throws \Exception
      */
-    public function __debugInfo()
+    public function __debugInfo(): array
     {
         return [
             'name' => $this->name,

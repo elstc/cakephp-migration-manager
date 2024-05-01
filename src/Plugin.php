@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2022 ELASTIC Consultants Inc.
+ * Copyright 2024 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -11,7 +11,6 @@ use Cake\Core\BasePlugin;
 use Cake\Core\Configure;
 use Cake\Core\PluginApplicationInterface;
 use Cake\Http\BaseApplication;
-use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 
@@ -25,28 +24,28 @@ class Plugin extends BasePlugin
      *
      * @var bool
      */
-    protected $bootstrapEnabled = true;
+    protected bool $bootstrapEnabled = true;
 
     /**
      * Load routes or not
      *
      * @var bool
      */
-    protected $routesEnabled = true;
+    protected bool $routesEnabled = true;
 
     /**
      * Enable middleware
      *
      * @var bool
      */
-    protected $middlewareEnabled = false;
+    protected bool $middlewareEnabled = false;
 
     /**
      * Console middleware
      *
      * @var bool
      */
-    protected $consoleEnabled = false;
+    protected bool $consoleEnabled = false;
 
     /**
      * @inheritDoc
@@ -73,7 +72,7 @@ class Plugin extends BasePlugin
         $routes->plugin(
             'Elastic/MigrationManager',
             ['path' => '/migration-manager'],
-            static function (RouteBuilder $routes) {
+            static function (RouteBuilder $routes): void {
                 $routes->fallbacks(DashedRoute::class);
             }
         );

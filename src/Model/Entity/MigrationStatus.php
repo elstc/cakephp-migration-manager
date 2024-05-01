@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2022 ELASTIC Consultants Inc.
+ * Copyright 2024 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -12,7 +12,7 @@ use Cake\ORM\Entity;
  * マイグレーション
  *
  * @property string $status
- * @property string $id
+ * @property string|int $id
  * @property string $name
  * @property bool $missing
  */

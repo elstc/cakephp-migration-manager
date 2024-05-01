@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2022 ELASTIC Consultants Inc.
+ * Copyright 2024 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -23,12 +23,7 @@ class MigrationGroupTest extends TestCase
     /**
      * @var MigrationGroup
      */
-    private $migrationManagerGroup;
-
-    /**
-     * @var string
-     */
-    private $_cwd;
+    private MigrationGroup $migrationManagerGroup;
 
     public function setUp(): void
     {
@@ -59,8 +54,8 @@ class MigrationGroupTest extends TestCase
         // Migrations plugin >= 2.1 以降 CONFIG が使用されるため環境によりマイグレーションパスが異なる
         $configPathMatch = preg_quote(ROOT, '!') . '(/tests/test_app)?/config';
 
-        $this->assertRegExp('!^' . $configPathMatch . '/Migrations$!', $object->getConfig()->getMigrationPaths()[0]);
-        $this->assertRegExp('!^' . $configPathMatch . '/Seeds$!', $object->getConfig()->getSeedPaths()[0]);
+        $this->assertMatchesRegularExpression('!^' . $configPathMatch . '/Migrations$!', $object->getConfig()->getMigrationPaths()[0]);
+        $this->assertMatchesRegularExpression('!^' . $configPathMatch . '/Seeds$!', $object->getConfig()->getSeedPaths()[0]);
         $environment = $object->getConfig()->getEnvironment('default');
         $this->assertSame('phinxlog', $environment['migration_table'] ?? $environment['default_migration_table']);
     }

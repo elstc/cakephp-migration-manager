@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2022 ELASTIC Consultants Inc.
+ * Copyright 2024 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -20,11 +20,11 @@ class MigrationManager extends CakeManager
      * NOTE: Only output array
      *
      * @param string $environment Environment name.
-     * @param null|string $format Format (`json` or `array`).
-     * @return array[] Array of migrations or json string.
+     * @param string|null $format Format (`json` or `array`).
+     * @return array<array> Array of migrations or json string.
      * @see \Migrations\CakeManager::printStatus()
      */
-    public function printStatus($environment, $format = null): array
+    public function printStatus(string $environment, ?string $format = null): array
     {
         $migrations = [];
         $phpFiles = $this->getMigrationFiles();

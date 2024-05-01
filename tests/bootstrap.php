@@ -1,14 +1,16 @@
 <?php
 /*
- * Copyright 2022 ELASTIC Consultants Inc.
+ * Copyright 2024 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
 use Cake\Cache\Cache;
 use Cake\Datasource\ConnectionManager;
+use Cake\TestSuite\Fixture\SchemaLoader;
+use Migrations\TestSuite\Migrator;
 
 /**
- * Test suite bootstrap for CakePHP Plugin.
+ * Test suite bootstrap for Elastic/MigrationManager.
  *
  * This function is used to find the location of CakePHP whether CakePHP
  * has been installed as a dependency of the plugin, or the plugin is itself
@@ -28,10 +30,24 @@ $findRoot = function ($root) {
 $root = $findRoot(__FILE__);
 unset($findRoot);
 
+// phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 $here = __DIR__;
 
 chdir($root);
 require $root . '/vendor/cakephp/cakephp/tests/bootstrap.php';
+require_once CORE_PATH . 'src/functions.php';
+
+// setup migration
+// phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+$schemaLoader = new SchemaLoader();
+//$schemaLoader->loadInternalFile($here . '/test_app/config/schema.php');
+
+// phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+$migrator = new Migrator();
+//$migrator->run([
+//    'plugin' => 'Elastic/MigrationManager',
+//    'skip' => [],
+//]);
 
 Cache::clearAll();
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2022 ELASTIC Consultants Inc.
+ * Copyright 2024 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -21,7 +21,7 @@ class MigrationGroupsTest extends TestCase
     /**
      * @var MigrationGroups
      */
-    private $subject;
+    private MigrationGroups $subject;
 
     public function setUp(): void
     {
