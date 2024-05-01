@@ -4,24 +4,20 @@ on:
   push:
     branches:
       - cake4
-      - cake3
   pull_request:
     branches:
       - '*'
   schedule:
     - cron: "0 7 1 * *"
-      branches:
-        - cake4
-        - cake3
 
 jobs:
   testsuite:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
-        cakephp-version: ['4.4.*']
-        php-version: ['7.4', '8.0', '8.1']
+        cakephp-version: ['4.5.*']
+        php-version: ['7.4', '8.0', '8.1', '8.2']
         db-type: ['mysql']
         prefer-lowest: ['']
         coverage: ['no']
@@ -70,8 +66,19 @@ jobs:
             prefer-lowest: ''
             coverage: 'no'
 
-          - php-version: '8.1'
-            cakephp-version: '4.4.*'
+          - cakephp-version: '4.4.*'
+            php-version: '7.4'
+            db-type: 'mysql:5.7'
+            prefer-lowest: 'prefer-lowest'
+            coverage: 'no'
+          - cakephp-version: '4.4.*'
+            php-version: '8.2'
+            db-type: 'mysql'
+            prefer-lowest: ''
+            coverage: 'no'
+
+          - php-version: '8.2'
+            cakephp-version: '4.5.*'
             db-type: 'mysql'
             prefer-lowest: ''
             coverage: 'coverage'
@@ -79,7 +86,7 @@ jobs:
     steps:
       - name: Setup MySQL latest
         if: matrix.db-type == 'mysql'
-        run: docker run --rm --name=mysqld -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=cakephp_test -p 3306:3306 -d mysql --default-authentication-plugin=mysql_native_password --disable-log-bin
+        run: docker run --rm --name=mysqld -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=cakephp_test -p 3306:3306 -d mysql:8.0 --default-authentication-plugin=mysql_native_password --disable-log-bin
 
       - name: Setup MySQL 5.7
         if: matrix.db-type == 'mysql:5.7'
@@ -155,7 +162,7 @@ jobs:
 
   cs-stan:
     name: Coding Standard & Static Analysis
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v3
