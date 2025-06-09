@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2024 ELASTIC Consultants Inc.
+ * Copyright 2025 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -118,9 +118,7 @@ class MigrationGroupTest extends TestCase
         $first = $migrations->first();
         $this->assertSame('down', $first->status);
 
-        $result = $this->migrationManagerGroup->migrateTo($first->id);
-
-        $this->assertStringContainsString('20191008091658 InitForTest: migrated', $result);
+        $this->assertTrue($this->migrationManagerGroup->migrateTo($first->id));
 
         $statuses = $this->migrationManagerGroup->getMigrations()->combine('name', 'status');
         $this->assertSame([
@@ -139,7 +137,7 @@ class MigrationGroupTest extends TestCase
 
         $first = $migrations->first();
         $last = $migrations->last();
-        $this->migrationManagerGroup->migrateTo($last->id);
+        $this->assertTrue($this->migrationManagerGroup->migrateTo($last->id));
         $statuses = $this->migrationManagerGroup->getMigrations()->combine('name', 'status');
         $this->assertSame([
             'InitForTest' => 'up',
@@ -147,10 +145,7 @@ class MigrationGroupTest extends TestCase
             'ThirdMigrationForTest' => 'up',
         ], $statuses->toArray());
 
-        $result = $this->migrationManagerGroup->rollback($first->id);
-
-        $this->assertStringContainsString('20191008091959 ThirdMigrationForTest: reverted', $result);
-        $this->assertStringContainsString('20191008091715 SecondMigrationForTest: reverted', $result);
+        $this->assertTrue($this->migrationManagerGroup->rollback($first->id));
 
         $statuses = $this->migrationManagerGroup->getMigrations()->combine('name', 'status');
         $this->assertSame([
@@ -168,7 +163,7 @@ class MigrationGroupTest extends TestCase
         $migrations = $this->migrationManagerGroup->getMigrations();
 
         $last = $migrations->last();
-        $this->migrationManagerGroup->migrateTo($last->id);
+        $this->assertTrue($this->migrationManagerGroup->migrateTo($last->id));
         $statuses = $this->migrationManagerGroup->getMigrations()->combine('name', 'status');
         $this->assertSame([
             'InitForTest' => 'up',
@@ -176,11 +171,7 @@ class MigrationGroupTest extends TestCase
             'ThirdMigrationForTest' => 'up',
         ], $statuses->toArray());
 
-        $result = $this->migrationManagerGroup->rollback(0);
-
-        $this->assertStringContainsString('20191008091658 InitForTest: reverted', $result);
-        $this->assertStringContainsString('20191008091959 ThirdMigrationForTest: reverted', $result);
-        $this->assertStringContainsString('20191008091715 SecondMigrationForTest: reverted', $result);
+        $this->assertTrue($this->migrationManagerGroup->rollback(0));
 
         $statuses = $this->migrationManagerGroup->getMigrations()->combine('name', 'status');
         $this->assertSame([

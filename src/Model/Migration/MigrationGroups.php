@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2024 ELASTIC Consultants Inc.
+ * Copyright 2025 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -22,7 +22,7 @@ class MigrationGroups
     private string $connection = 'default';
 
     /**
-     * @return \Cake\Collection\CollectionInterface|iterable<\Elastic\MigrationManager\Model\Migration\MigrationGroup>
+     * @return \Cake\Collection\CollectionInterface<\Elastic\MigrationManager\Model\Migration\MigrationGroup>
      */
     public function fetchAll(): CollectionInterface
     {
@@ -74,16 +74,16 @@ class MigrationGroups
     {
         $migrationPath = Plugin::configPath($pluginName) . 'Migrations';
 
-        return is_dir($migrationPath) && count(glob($migrationPath . '/*.php'));
+        return is_dir($migrationPath) && count(array_filter((array)glob($migrationPath . '/*.php')));
     }
 
     /**
      * コネクションのセット
      *
-     * @param string|null $connection 指定コネクション
+     * @param string $connection 指定コネクション
      * @return self
      */
-    public function withConnection(?string $connection): MigrationGroups
+    public function withConnection(string $connection): MigrationGroups
     {
         $new = clone $this;
         $new->connection = $connection;

@@ -20,30 +20,22 @@ use Cake\Routing\RouteBuilder;
 class Plugin extends BasePlugin
 {
     /**
-     * Do bootstrapping or not
-     *
-     * @var bool
+     * @inheritDoc
      */
     protected bool $bootstrapEnabled = true;
 
     /**
-     * Load routes or not
-     *
-     * @var bool
+     * @inheritDoc
      */
     protected bool $routesEnabled = true;
 
     /**
-     * Enable middleware
-     *
-     * @var bool
+     * @inheritDoc
      */
     protected bool $middlewareEnabled = false;
 
     /**
-     * Console middleware
-     *
-     * @var bool
+     * @inheritDoc
      */
     protected bool $consoleEnabled = false;
 

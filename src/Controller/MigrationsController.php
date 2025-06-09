@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2022 ELASTIC Consultants Inc.
+ * Copyright 2025 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -10,11 +10,12 @@ use Cake\Core\Configure;
 use Cake\Http\Response;
 use Elastic\MigrationManager\Model\Migration\MigrationGroup;
 use Elastic\MigrationManager\Model\Migration\MigrationGroups;
+use function Cake\I18n\__d;
 
 /**
  * Migrations Controller
  *
- * @property \Cake\Controller\Component\FlashComponent|null $Flash
+ * @property \Cake\Controller\Component\FlashComponent $Flash
  * @property \Authorization\Controller\Component\AuthorizationComponent|null $Authorization
  */
 class MigrationsController extends BaseController
@@ -71,9 +72,9 @@ class MigrationsController extends BaseController
     /**
      * Migrate to Target ID
      *
-     * @return \Cake\Http\Response
+     * @return \Cake\Http\Response|null
      */
-    public function migrate(): Response
+    public function migrate(): ?Response
     {
         $this->getRequest()->allowMethod(['post']);
 
@@ -86,11 +87,12 @@ class MigrationsController extends BaseController
         }
 
         $migrationGroup = new MigrationGroup($groupName);
-        $result = $migrationGroup->migrateTo($id);
 
-        $this->Flash->success(__d('elastic.migration_manager', 'Migration success: {0}', nl2br(h($result))), [
-            'escape' => false,
-        ]);
+        if ($migrationGroup->migrateTo($id)) {
+            $this->Flash->success(__d('elastic.migration_manager', 'Migration success'));
+        } else {
+            $this->Flash->error(__d('elastic.migration_manager', 'Migration failed'));
+        }
 
         return $this->redirect(['action' => 'view', '?' => ['name' => $groupName]]);
     }
@@ -98,9 +100,9 @@ class MigrationsController extends BaseController
     /**
      * Rollback to Target ID
      *
-     * @return \Cake\Http\Response
+     * @return \Cake\Http\Response|null
      */
-    public function rollback(): Response
+    public function rollback(): ?Response
     {
         $this->getRequest()->allowMethod(['post']);
 
@@ -119,17 +121,18 @@ class MigrationsController extends BaseController
         }
 
         $migrationGroup = new MigrationGroup($groupName);
-        $result = $migrationGroup->migrateTo($id);
 
-        $this->Flash->success(__d('elastic.migration_manager', 'Rollback success: {0}', nl2br(h($result))), [
-            'escape' => false,
-        ]);
+        if ($migrationGroup->migrateTo($id)) {
+            $this->Flash->success(__d('elastic.migration_manager', 'Rollback success'));
+        } else {
+            $this->Flash->error(__d('elastic.migration_manager', 'Rollback failed'));
+        }
 
         return $this->redirect(['action' => 'view', '?' => ['name' => $groupName]]);
     }
 
     /**
-     * Show specific migration file
+     * Show a specific migration file
      *
      * @return void
      */
