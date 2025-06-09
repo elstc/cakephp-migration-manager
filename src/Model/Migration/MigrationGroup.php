@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2024 ELASTIC Consultants Inc.
+ * Copyright 2025 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -9,40 +9,29 @@ namespace Elastic\MigrationManager\Model\Migration;
 use Cake\Collection\Collection;
 use Cake\Collection\CollectionInterface;
 use Cake\Core\Configure;
-use Cake\Database\Connection;
-use Cake\Datasource\ConnectionManager;
 use Cake\Http\Exception\NotFoundException;
 use Elastic\MigrationManager\Model\Entity\MigrationStatus;
-use InvalidArgumentException;
-use Migrations\CakeAdapter;
-use Migrations\ConfigurationTrait;
-use Phinx\Migration\Manager;
+use Migrations\Migrations;
+use Phinx\Config\ConfigInterface;
 use ReflectionClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\OutputInterface;
+use function Cake\I18n\__d;
 
 /**
  * マイグレーショングループ
  */
 class MigrationGroup
 {
-    use ConfigurationTrait;
-
     /**
      * @var string
      */
     private string $name;
 
     /**
-     * @var \Phinx\Migration\Manager|null
+     * @var \Migrations\Migrations
      */
-    private ?Manager $manager = null;
-
-    /**
-     * @var \Symfony\Component\Console\Output\OutputInterface|null
-     */
-    private ?OutputInterface $output = null;
+    private Migrations $migrations;
 
     /**
      * MigrationGroup constructor.
@@ -54,15 +43,16 @@ class MigrationGroup
     {
         $this->name = $name;
 
-        $this->input = $this->buildInput($name, $connection);
-    }
+        $migrationsConfig = [
+            'connection' => $connection ?: 'default',
+            'plugin' => null,
+        ];
+        if ($name !== Configure::read('App.namespace')) {
+            $migrationsConfig['plugin'] = $name;
+        }
 
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
+        $this->migrations = new Migrations($migrationsConfig);
+        $this->migrations->setInput($this->buildInput($name, $connection));
     }
 
     /**
@@ -86,65 +76,37 @@ class MigrationGroup
     }
 
     /**
+     * マイグレーションマネージャー設定の取得
+     *
+     * @return \Phinx\Config\ConfigInterface
+     */
+    public function getConfig(): ConfigInterface
+    {
+        return $this->migrations->getConfig();
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
      * マイグレーションリストの取得
      *
-     * @return \Cake\Collection\CollectionInterface|iterable<\Elastic\MigrationManager\Model\Entity\MigrationStatus>
+     * @return \Cake\Collection\CollectionInterface<\Elastic\MigrationManager\Model\Entity\MigrationStatus>
      * @throws \Exception
      */
     public function getMigrations(): CollectionInterface
     {
-        $manager = $this->getManager();
-        $statuses = $manager->printStatus($this->getConfig()->getDefaultEnvironment(), 'json');
+        $statuses = $this->migrations->status();
         $migrations = array_map(static function ($status) {
             return new MigrationStatus($status);
         }, $statuses);
 
         return new Collection($migrations);
-    }
-
-    /**
-     * @return \Phinx\Migration\Manager
-     * @throws \Exception
-     */
-    private function getManager(): Manager
-    {
-        if ($this->manager === null) {
-            $this->output = new BufferedOutput();
-            $this->manager = new MigrationManager($this->getConfig(), $this->input, $this->output);
-            $this->setAdapter($this->manager);
-        }
-
-        return $this->manager;
-    }
-
-    /**
-     * Sets the adapter the manager is going to need to operate on the DB
-     * This will make sure the adapter instance is a \Migrations\CakeAdapter instance
-     *
-     * @param \Phinx\Migration\Manager $manager the migration manager
-     * @return void
-     * @throws \Cake\Datasource\Exception\MissingDatasourceConfigException
-     */
-    private function setAdapter(Manager $manager): void
-    {
-        $env = $manager->getEnvironment('default');
-        $input = $manager->getInput();
-        $adapter = $env->getAdapter();
-
-        if ($adapter instanceof CakeAdapter) {
-            return;
-        }
-
-        $connectionName = 'default';
-        if ($input !== null && $input->getOption('connection')) {
-            $connectionName = $input->getOption('connection');
-        }
-        $connection = ConnectionManager::get($connectionName);
-        if (!$connection instanceof Connection) {
-            throw new InvalidArgumentException('$connection must be ' . Connection::class);
-        }
-
-        $env->setAdapter(new CakeAdapter($adapter, $connection));
     }
 
     /**
@@ -162,45 +124,36 @@ class MigrationGroup
      * 指定バージョンまでマイグレーションを実行する
      *
      * @param string|int $id migration ID
-     * @return string
+     * @return bool
      * @throws \Exception
      */
-    public function migrateTo(string|int $id): string
+    public function migrateTo(string|int $id): bool
     {
-        $manager = $this->getManager();
-        $manager->migrate($this->getConfig()->getDefaultEnvironment(), (int)$id);
-
-        return $this->output->fetch();
+        return $this->migrations->migrate(['target' => $id]);
     }
 
     /**
      * 指定バージョンをロールバックする
      *
      * @param string|int $id migration ID
-     * @return string
+     * @return bool
      * @throws \Exception
      */
-    public function rollback(string|int $id): string
+    public function rollback(string|int $id): bool
     {
-        $manager = $this->getManager();
-        $manager->rollback($this->getConfig()->getDefaultEnvironment(), $id);
-
-        return $this->output->fetch();
+        return $this->migrations->rollback(['target' => $id]);
     }
 
     /**
      * シードを実行する
      *
      * @param string|null $seed seed name
-     * @return string
+     * @return bool
      * @throws \Exception
      */
-    public function seed(?string $seed = null): string
+    public function seed(?string $seed = null): bool
     {
-        $manager = $this->getManager();
-        $manager->seed($this->getConfig()->getDefaultEnvironment(), $seed);
-
-        return $this->output->fetch();
+        return $this->migrations->seed(['seed' => $seed]);
     }
 
     /**
@@ -213,23 +166,31 @@ class MigrationGroup
      */
     public function getFileContent(string $id): string
     {
-        $migrations = $this->getManager()->getMigrations($this->getConfig()->getDefaultEnvironment());
+        $manager = $this->migrations->getManager($this->getConfig());
+        $migrations = $manager->getMigrations($manager->getConfig()->getDefaultEnvironment());
 
-        $matched = false;
-        foreach ($migrations as $version => $migration) {
+        $migration = null;
+        foreach ($migrations as $version => $_migration) {
             if ($version === (int)$id) {
-                $matched = true;
+                $migration = $_migration;
                 break;
             }
         }
 
-        if (!$matched) {
+        if (!$migration) {
             throw new NotFoundException(__d('elastic.migration_manager', 'Migration Not Found. ID: {0}', $id));
         }
 
         $reflection = new ReflectionClass($migration);
+        $fileName = $reflection->getFileName();
 
-        return file_get_contents($reflection->getFileName());
+        if (!$fileName) {
+            throw new NotFoundException(
+                __d('elastic.migration_manager', 'Migration file not found for ID: {0}', $id),
+            );
+        }
+
+        return (string)file_get_contents($fileName);
     }
 
     /**
@@ -238,9 +199,9 @@ class MigrationGroup
      * @param string $connection target connection name
      * @return self
      */
-    public function withConnection(string $connection): MigrationGroup
+    public function withConnection(string $connection): self
     {
-        return new static($this->name, $connection);
+        return new self($this->name, $connection);
     }
 
     /**

@@ -1,10 +1,12 @@
 <?php
 /*
- * Copyright 2024 ELASTIC Consultants Inc.
+ * Copyright 2025 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
 use Cake\Cache\Cache;
+use Cake\Controller\Controller;
+use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\Fixture\SchemaLoader;
 use Migrations\TestSuite\Migrator;
@@ -60,6 +62,8 @@ if (!ConnectionManager::getConfig('default')) {
 if (!ConnectionManager::getConfig('other')) {
     ConnectionManager::setConfig('other', array_merge(
         ['port' => 5432],
-        ConnectionManager::getConfig('test')
+        ConnectionManager::getConfig('test'),
     ));
 }
+
+class_alias(Controller::class, 'Elastic\MigrationManager\Controller\BaseController');
