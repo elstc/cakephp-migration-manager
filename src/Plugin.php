@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2024 ELASTIC Consultants Inc.
+ * Copyright 2025 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -55,7 +55,7 @@ class Plugin extends BasePlugin
         if (!class_exists('Elastic\MigrationManager\Controller\BaseController')) {
             class_alias(Configure::read(
                 'Elastic/MigrationManager.baseController',
-                Controller::class
+                Controller::class,
             ), 'Elastic\MigrationManager\Controller\BaseController');
         }
 
@@ -74,7 +74,7 @@ class Plugin extends BasePlugin
             ['path' => '/migration-manager'],
             static function (RouteBuilder $routes): void {
                 $routes->fallbacks(DashedRoute::class);
-            }
+            },
         );
     }
 }
