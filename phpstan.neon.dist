@@ -6,9 +6,7 @@ parameters:
     excludePaths:
         - test_app/
     ignoreErrors:
-        -
-            identifier: missingType.iterableValue
-        -
-            identifier: missingType.generics
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
     bootstrapFiles:
         - tests/bootstrap.php
