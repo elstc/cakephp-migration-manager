@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2025 ELASTIC Consultants Inc.
+ * Copyright 2026 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -17,7 +17,7 @@ use Cake\Routing\RouteBuilder;
 /**
  * Plugin class for CakePHP.
  */
-class Plugin extends BasePlugin
+class MigrationManagerPlugin extends BasePlugin
 {
     /**
      * @inheritDoc
