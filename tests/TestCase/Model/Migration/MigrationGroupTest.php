@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2025 ELASTIC Consultants Inc.
+ * Copyright 2026 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -13,11 +13,12 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\TestSuite\TestCase;
 use Elastic\MigrationManager\Model\Entity\MigrationStatus;
 use Elastic\MigrationManager\Model\Migration\MigrationGroup;
-use Phinx\Config\Config;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class MigrationGroupTest
  */
+#[CoversClass(MigrationGroup::class)]
 class MigrationGroupTest extends TestCase
 {
     /**
@@ -49,15 +50,7 @@ class MigrationGroupTest extends TestCase
         $object = new MigrationGroup(Configure::read('App.namespace'));
 
         $this->assertSame('App', $object->getName());
-        $this->assertInstanceOf(Config::class, $object->getConfig());
-        $this->assertSame('default', $object->getConfig()->getDefaultEnvironment());
-        // Migrations plugin >= 2.1 以降 CONFIG が使用されるため環境によりマイグレーションパスが異なる
-        $configPathMatch = preg_quote(ROOT, '!') . '(/tests/test_app)?/config';
-
-        $this->assertMatchesRegularExpression('!^' . $configPathMatch . '/Migrations$!', $object->getConfig()->getMigrationPaths()[0]);
-        $this->assertMatchesRegularExpression('!^' . $configPathMatch . '/Seeds$!', $object->getConfig()->getSeedPaths()[0]);
-        $environment = $object->getConfig()->getEnvironment('default');
-        $this->assertSame('phinxlog', $environment['migration_table'] ?? $environment['default_migration_table']);
+        $this->assertInstanceOf(CollectionInterface::class, $object->getMigrations());
     }
 
     /**
@@ -68,16 +61,7 @@ class MigrationGroupTest extends TestCase
         $object = new MigrationGroup('Elastic/MigrationManager');
 
         $this->assertSame('Elastic/MigrationManager', $object->getName());
-        $this->assertInstanceOf(Config::class, $object->getConfig());
-        $this->assertSame('default', $object->getConfig()->getDefaultEnvironment());
-        $this->assertSame([
-            Plugin::configPath('Elastic/MigrationManager') . 'Migrations',
-        ], $object->getConfig()->getMigrationPaths());
-        $this->assertSame([
-            Plugin::configPath('Elastic/MigrationManager') . 'Seeds',
-        ], $object->getConfig()->getSeedPaths());
-        $environment = $object->getConfig()->getEnvironment('default');
-        $this->assertSame('elastic_migration_manager_phinxlog', $environment['migration_table'] ?? $environment['default_migration_table']);
+        $this->assertInstanceOf(CollectionInterface::class, $object->getMigrations());
     }
 
     /**
@@ -104,8 +88,8 @@ class MigrationGroupTest extends TestCase
 
         $this->assertInstanceOf(MigrationStatus::class, $last);
         $this->assertSame('down', $last->status);
-        $this->assertSame('20191008091959', (string)$last->id);
-        $this->assertSame('ThirdMigrationForTest', $last->name);
+        $this->assertSame('20191008092000', (string)$last->id);
+        $this->assertSame('FourthMigrationForTest', $last->name);
     }
 
     /**
@@ -125,6 +109,7 @@ class MigrationGroupTest extends TestCase
             'InitForTest' => 'up',
             'SecondMigrationForTest' => 'down',
             'ThirdMigrationForTest' => 'down',
+            'FourthMigrationForTest' => 'down',
         ], $statuses->toArray());
     }
 
@@ -143,6 +128,7 @@ class MigrationGroupTest extends TestCase
             'InitForTest' => 'up',
             'SecondMigrationForTest' => 'up',
             'ThirdMigrationForTest' => 'up',
+            'FourthMigrationForTest' => 'up',
         ], $statuses->toArray());
 
         $this->assertTrue($this->migrationManagerGroup->rollback($first->id));
@@ -152,6 +138,7 @@ class MigrationGroupTest extends TestCase
             'InitForTest' => 'up',
             'SecondMigrationForTest' => 'down',
             'ThirdMigrationForTest' => 'down',
+            'FourthMigrationForTest' => 'down',
         ], $statuses->toArray());
     }
 
@@ -169,6 +156,7 @@ class MigrationGroupTest extends TestCase
             'InitForTest' => 'up',
             'SecondMigrationForTest' => 'up',
             'ThirdMigrationForTest' => 'up',
+            'FourthMigrationForTest' => 'up',
         ], $statuses->toArray());
 
         $this->assertTrue($this->migrationManagerGroup->rollback(0));
@@ -178,6 +166,7 @@ class MigrationGroupTest extends TestCase
             'InitForTest' => 'down',
             'SecondMigrationForTest' => 'down',
             'ThirdMigrationForTest' => 'down',
+            'FourthMigrationForTest' => 'down',
         ], $statuses->toArray());
     }
 
@@ -189,6 +178,27 @@ class MigrationGroupTest extends TestCase
         $expects = file_get_contents(Plugin::configPath('Elastic/MigrationManager') . 'Migrations/20191008091658_InitForTest.php');
         $result = $this->migrationManagerGroup->getFileContent('20191008091658');
 
+        $this->assertSame($expects, $result);
+    }
+
+    /**
+     * BaseMigrationベースのマイグレーションファイルの内容を取得できる
+     */
+    public function testGetFileContentBaseMigration(): void
+    {
+        // Arrange
+        // -----------------------------------------------
+        // BaseMigration を使ったマイグレーションファイルの期待値を準備する
+        $expects = file_get_contents(Plugin::configPath('Elastic/MigrationManager') . 'Migrations/20191008092000_FourthMigrationForTest.php');
+
+        // Act
+        // -----------------------------------------------
+        // BaseMigration ベースのマイグレーションファイル内容を取得する
+        $result = $this->migrationManagerGroup->getFileContent('20191008092000');
+
+        // Assert
+        // -----------------------------------------------
+        // ファイル内容が正しいことを検証する
         $this->assertSame($expects, $result);
     }
 
@@ -210,8 +220,7 @@ class MigrationGroupTest extends TestCase
     {
         $migrationGroup = new MigrationGroup('Elastic/MigrationManager', 'other');
 
-        $this->assertSame('default', $migrationGroup->getConfig()->getDefaultEnvironment());
-        $this->assertSame(5432, $migrationGroup->getConfig()->getEnvironment('default')['port']);
+        $this->assertInstanceOf(CollectionInterface::class, $migrationGroup->getMigrations());
     }
 
     /**
@@ -222,11 +231,9 @@ class MigrationGroupTest extends TestCase
         $migrationGroup = new MigrationGroup('Elastic/MigrationManager');
         $withConnection = $migrationGroup->withConnection('other');
 
-        $this->assertSame('default', $withConnection->getConfig()->getDefaultEnvironment());
-        $this->assertSame(5432, $withConnection->getConfig()->getEnvironment('default')['port']);
+        $this->assertInstanceOf(CollectionInterface::class, $withConnection->getMigrations());
 
-        // immutable
-        $this->assertSame('default', $migrationGroup->getConfig()->getDefaultEnvironment());
-        $this->assertNull($migrationGroup->getConfig()->getEnvironment('default')['port']);
+        // immutable: 元のオブジェクトは変更されていないことを確認する
+        $this->assertSame('Elastic/MigrationManager', $migrationGroup->getName());
     }
 }

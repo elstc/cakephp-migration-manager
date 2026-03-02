@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 use Migrations\BaseMigration;
 
-class InitForTest extends BaseMigration
+class FourthMigrationForTest extends BaseMigration
 {
     /**
      * Change Method.
