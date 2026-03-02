@@ -5,6 +5,8 @@ parameters:
         - src/
     excludePaths:
         - test_app/
+        # cakephp/migrations 4.x 互換用。5.x では symfony/console が依存から外れるため除外する
+        - src/Model/Migration/InputBuilder.php
     ignoreErrors:
         - identifier: missingType.iterableValue
         - identifier: missingType.generics

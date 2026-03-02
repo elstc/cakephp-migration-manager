@@ -1,21 +1,22 @@
 <?php
 /*
- * Copyright 2024 ELASTIC Consultants Inc.
+ * Copyright 2026 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
 namespace Elastic\MigrationManager\Test\TestCase\Model\Migration;
 
 use Cake\Collection\CollectionInterface;
-use Cake\Core\Plugin;
 use Cake\TestSuite\TestCase;
 use Elastic\MigrationManager\Model\Migration\MigrationGroup;
 use Elastic\MigrationManager\Model\Migration\MigrationGroups;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Traversable;
 
 /**
  * Class MigrationGroupsTest
  */
+#[CoversClass(MigrationGroups::class)]
 class MigrationGroupsTest extends TestCase
 {
     /**
@@ -67,7 +68,7 @@ class MigrationGroupsTest extends TestCase
         $results = $groups->fetchAll();
 
         $first = $results->first();
-        $this->assertSame('default', $first->getConfig()->getDefaultEnvironment());
-        $this->assertSame(5432, $first->getConfig()->getEnvironment('default')['port']);
+        $this->assertInstanceOf(MigrationGroup::class, $first);
+        $this->assertInstanceOf(CollectionInterface::class, $first->getMigrations());
     }
 }

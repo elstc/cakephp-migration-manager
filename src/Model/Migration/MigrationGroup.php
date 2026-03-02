@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2025 ELASTIC Consultants Inc.
+ * Copyright 2026 ELASTIC Consultants Inc.
  */
 declare(strict_types=1);
 
@@ -9,13 +9,12 @@ namespace Elastic\MigrationManager\Model\Migration;
 use Cake\Collection\Collection;
 use Cake\Collection\CollectionInterface;
 use Cake\Core\Configure;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\NotFoundException;
 use Elastic\MigrationManager\Model\Entity\MigrationStatus;
 use Migrations\Migrations;
-use Phinx\Config\ConfigInterface;
-use ReflectionClass;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\BufferedOutput;
+use Migrations\Util\Util;
+use RuntimeException;
 use function Cake\I18n\__d;
 
 /**
@@ -27,6 +26,11 @@ class MigrationGroup
      * @var string
      */
     private string $name;
+
+    /**
+     * @var string|null
+     */
+    private ?string $plugin;
 
     /**
      * @var \Migrations\Migrations
@@ -43,26 +47,30 @@ class MigrationGroup
     {
         $this->name = $name;
 
+        $isPlugin = $name !== Configure::read('App.namespace');
+        $this->plugin = $isPlugin ? $name : null;
+
         $migrationsConfig = [
             'connection' => $connection ?: 'default',
-            'plugin' => null,
+            'plugin' => $this->plugin,
         ];
-        if ($name !== Configure::read('App.namespace')) {
-            $migrationsConfig['plugin'] = $name;
-        }
 
         $this->migrations = new Migrations($migrationsConfig);
-        $this->migrations->setInput($this->buildInput($name, $connection));
+
+        // cakephp/migrations 4.x では setInput() が必要
+        if (method_exists($this->migrations, 'setInput')) {
+            $this->migrations->setInput($this->buildInput($name, $connection));
+        }
     }
 
     /**
-     * Inputオブジェクトの構築
+     * Inputオブジェクトの構築（cakephp/migrations 4.x 用）
      *
      * @param string $name the app / plugin name
      * @param string|null $connection the connection name
-     * @return \Symfony\Component\Console\Input\InputInterface
+     * @return mixed
      */
-    private function buildInput(string $name, ?string $connection = null): InputInterface
+    private function buildInput(string $name, ?string $connection = null): mixed
     {
         $args = [];
         if ($name !== Configure::read('App.namespace')) {
@@ -73,16 +81,6 @@ class MigrationGroup
         }
 
         return (new InputBuilder())->build($args);
-    }
-
-    /**
-     * マイグレーションマネージャー設定の取得
-     *
-     * @return \Phinx\Config\ConfigInterface
-     */
-    public function getConfig(): ConfigInterface
-    {
-        return $this->migrations->getConfig();
     }
 
     /**
@@ -159,38 +157,52 @@ class MigrationGroup
     /**
      * マイグレーションファイルの内容を取得する
      *
+     * ReflectionClass を使わずファイルパス一覧からバージョン番号でマッチさせることで、
+     * BaseMigration ベースのマイグレーションファイルにも対応する。
+     *
      * @param string $id migration ID
      * @return string
      * @throws \Cake\Http\Exception\NotFoundException
-     * @throws \Exception
      */
     public function getFileContent(string $id): string
     {
-        $manager = $this->migrations->getManager($this->getConfig());
-        $migrations = $manager->getMigrations($manager->getConfig()->getDefaultEnvironment());
+        $migrationPaths = $this->getMigrationPaths();
+        $phpFiles = Util::getFiles($migrationPaths);
 
-        $migration = null;
-        foreach ($migrations as $version => $_migration) {
-            if ($version === (int)$id) {
-                $migration = $_migration;
-                break;
+        foreach ($phpFiles as $filePath) {
+            $fileName = basename($filePath);
+            if (!Util::isValidMigrationFileName($fileName)) {
+                continue;
+            }
+
+            $version = (string)Util::getVersionFromFileName($fileName);
+            if ($version === $id) {
+                $content = file_get_contents($filePath);
+                if ($content === false) {
+                    throw new RuntimeException(
+                        __d('elastic.migration_manager', 'Failed to read migration file: {0}', $filePath),
+                    );
+                }
+
+                return $content;
             }
         }
 
-        if (!$migration) {
-            throw new NotFoundException(__d('elastic.migration_manager', 'Migration Not Found. ID: {0}', $id));
+        throw new NotFoundException(__d('elastic.migration_manager', 'Migration Not Found. ID: {0}', $id));
+    }
+
+    /**
+     * マイグレーションパスの取得
+     *
+     * @return array<string>
+     */
+    private function getMigrationPaths(): array
+    {
+        if ($this->plugin !== null) {
+            return [Plugin::configPath($this->plugin) . 'Migrations'];
         }
 
-        $reflection = new ReflectionClass($migration);
-        $fileName = $reflection->getFileName();
-
-        if (!$fileName) {
-            throw new NotFoundException(
-                __d('elastic.migration_manager', 'Migration file not found for ID: {0}', $id),
-            );
-        }
-
-        return (string)file_get_contents($fileName);
+        return [CONFIG . 'Migrations'];
     }
 
     /**
@@ -212,7 +224,6 @@ class MigrationGroup
     {
         return [
             'name' => $this->name,
-            'config' => $this->getConfig(),
             'migrations' => $this->getMigrations()->toList(),
         ];
     }
