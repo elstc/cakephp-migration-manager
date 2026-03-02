@@ -60,16 +60,10 @@ if (!ConnectionManager::getConfig('default')) {
     ConnectionManager::setConfig('default', ConnectionManager::getConfig('test'));
 }
 if (!ConnectionManager::getConfig('other')) {
-    ConnectionManager::setConfig('other', array_merge(
-        ['port' => 5432],
-        ConnectionManager::getConfig('test'),
-    ));
+    ConnectionManager::setConfig('other', ConnectionManager::getConfig('test'));
 }
 if (!ConnectionManager::getConfig('test_other')) {
-    ConnectionManager::setConfig('test_other', array_merge(
-        ['port' => 5432],
-        ConnectionManager::getConfig('test'),
-    ));
+    ConnectionManager::setConfig('test_other', ConnectionManager::getConfig('test'));
 }
 
 class_alias(Controller::class, 'Elastic\MigrationManager\Controller\BaseController');
